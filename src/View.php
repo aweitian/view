@@ -17,6 +17,8 @@ class View
     protected $ext_path = '';
     protected $viewFile = '';
     protected $inc_File = '';
+
+    protected $variable_scope = array();
     /**
      * All of the finished, captured sections.
      *
@@ -55,6 +57,21 @@ class View
         $this->tpl_dir = $tpl_dir;
     }
 
+    public function addVariableScope($key, $val)
+    {
+        $this->variable_scope[$key] = $val;
+    }
+
+    public function mergeVariableScope(array $vars)
+    {
+        $this->variable_scope = array_merge($this->variable_scope, $vars);
+    }
+
+    public function getVariableScope()
+    {
+        return $this->variable_scope;
+    }
+
     /**
      * PATH可以是index/index or index  or index.php
      * @param $path
@@ -66,12 +83,12 @@ class View
         $this->ext_path = $path;
         if (file_exists($this->ext_path)) {
             extract($this->data);
+            extract($this->variable_scope);
             ob_start();
             include $this->ext_path;
+
             $this->response = ob_get_clean();
-        }
-        else
-        {
+        } else {
             echo "<!-- {$this->ext_path} is nonexist -->";
         }
     }
@@ -85,6 +102,7 @@ class View
         $this->inc_File = $this->fixPath($path, $isAbsPath);
         if (file_exists($this->inc_File)) {
             extract($this->data);
+            extract($this->variable_scope);
             include $this->inc_File;
         }
 
@@ -99,7 +117,7 @@ class View
     {
         if ($isAbsPath) return $path;
 
-        return $this->tpl_dir . (substr($this->tpl_dir, -1, 1) == '/' ? '' : '/') . $path . (substr($path,-4,4) == '.php' ? '' : '.php');
+        return $this->tpl_dir . (substr($this->tpl_dir, -1, 1) == '/' ? '' : '/') . $path . (substr($path, -4, 4) == '.php' ? '' : '.php');
     }
 
     /**
@@ -269,11 +287,12 @@ class View
      * @param bool $isAbsPath
      * @return string
      */
-    public function render($path,$isAbsPath = false)
+    public function render($path, $isAbsPath = false)
     {
-        $this->viewFile = $this->fixPath($path,$isAbsPath);
+        $this->viewFile = $this->fixPath($path, $isAbsPath);
         if (file_exists($this->viewFile)) {
             extract($this->data);
+            extract($this->variable_scope);
             ob_start();
             include $this->viewFile;
             $this->response .= ob_get_clean();

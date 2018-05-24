@@ -38,5 +38,13 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $ret = $test->render('nest-section');
         $this->assertTrue(1 === preg_match("/^\s*<html><head><\/head><body>balbalbal\s*<\/body><\/html>\s*foo\s*$/",$ret));
     }
+
+    public function testVarScope()
+    {
+        $test = new Aw\View(__DIR__.'/tpl');
+        $ret = $test->render('lu_ren_jia_tama');
+//        print $ret;
+        $this->assertTrue('110ac' === $ret);
+    }
 }
 
