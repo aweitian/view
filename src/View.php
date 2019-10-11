@@ -117,7 +117,10 @@ class View
     {
         if ($isAbsPath) return $path;
 
-        return $this->tpl_dir . (substr($this->tpl_dir, -1, 1) == '/' ? '' : '/') . $path . (substr($path, -4, 4) == '.php' ? '' : '.php');
+        $p = $this->tpl_dir . (substr($this->tpl_dir, -1, 1) == '/' ? '' : '/') . $path;
+        if (file_exists($p))
+            return $p;
+        return $p . (substr($path, -4, 4) == '.php' ? '' : '.php');
     }
 
     /**
