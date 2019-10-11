@@ -293,7 +293,7 @@ class View
     public function render($path, $isAbsPath = false)
     {
         $this->viewFile = $this->fixPath($path, $isAbsPath);
-        if (file_exists($this->viewFile)) {
+        if (substr($path, 0, 9) === 'string://' || file_exists($this->viewFile)) {
             extract($this->data);
             extract($this->variable_scope);
             ob_start();
